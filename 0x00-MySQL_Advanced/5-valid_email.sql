@@ -3,10 +3,12 @@
 DELIMITER $$
 
 CREATE TRIGGER set_valid_email_to_false
-AFTER INSERT
-ON users FOR EACH ROW
+BEFORE UPDATE
+ON users FOR EACH ROW     
 BEGIN
-    UPDATE users SET valid_email = false WHERE id = NEW.id;
+    IF NEW.email != OLD.email THEN
+        SET NEW.valid_email = 0;
+    END IF;
 END$$
 
 DELIMITER ;
