@@ -9,7 +9,8 @@ BEGIN
                            WHERE corrections.user_id = user_id);
 
     UPDATE users
-    SET average_score = @average_score;
+    SET average_score = @average_score
+    WHERE id = user_id;
 END$$
 
 DELIMITER ;
