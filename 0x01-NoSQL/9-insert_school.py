@@ -3,6 +3,7 @@
 from pymongo.collection import Collection
 
 
-def insert_school(mongo_collection: Collection, **kwargs: dict):
+def insert_school(mongo_collection: Collection, **kwargs):
     """ insert school """
-    return mongo_collection.insert_one(kwargs)
+    record = mongo_collection.insert_one(kwargs)
+    return record.inserted_id
