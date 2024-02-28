@@ -6,7 +6,7 @@ from typing import Union
 from uuid import uuid4
 
 
-class Caches:
+class Cache:
     """
     This is cash class
     """
