@@ -1,8 +1,26 @@
 """ Redis with python
 """
 import redis
+from functools import wraps
 from typing import Union, Callable, Optional, Any
 from uuid import uuid4
+
+
+def count_calls(method: Callable) -> Callable:
+    '''
+     function that increments the count for
+       that key every time the method is called and returns
+       the value returned by the original method.
+    '''
+    @wraps(method)
+    def counter(self, *args, **kwargs) -> Any:
+        '''
+        Invokes the given method after incrementing its call counter.
+        '''
+        if isinstance(self._redis, redis.Redis):
+            self._redis.incr(method.__qualname__)
+        return method(self, *args, **kwargs)
+    return counter
 
 
 class Cache:
