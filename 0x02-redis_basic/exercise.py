@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ Redis with python
 """
 import redis
