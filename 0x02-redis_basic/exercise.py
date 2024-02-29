@@ -13,14 +13,14 @@ def count_calls(method: Callable) -> Callable:
        the value returned by the original method.
     '''
     @wraps(method)
-    def counter(self, *args, **kwargs) -> Any:
+    def wrapper(self, *args, **kwargs):
         '''
-        Invokes the given method after incrementing its call counter.
+            Wrapper function.
         '''
-        if isinstance(self._redis, redis.Redis):
-            self._redis.incr(method.__qualname__)
+        key = method.__qualname__
+        self._redis.incr(key)
         return method(self, *args, **kwargs)
-    return counter
+    return wrapper
 
 
 class Cache:
