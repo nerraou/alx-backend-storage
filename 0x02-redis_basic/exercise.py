@@ -10,6 +10,9 @@ class Cache:
     This is cash class
     """
     def __init__(self) -> None:
+        """
+        Cache constructor
+        """
         self._redis = redis.Redis()
         self._redis.flushdb()
 
