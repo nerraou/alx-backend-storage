@@ -3,10 +3,10 @@
 obtain the HTML content of a particular URL and return it
 """
 import requests
-
 import redis
 from functools import wraps
 from typing import Callable
+
 
 redis_client = redis.Redis()
 
@@ -20,14 +20,14 @@ def track_url_access(method: Callable) -> Callable:
         """
         Wrapper function.
         """
-        count_key = "count:{}".format(url)
-        content_key = "content:{}".format(url)
-
-        redis_client.incr(count_key)
+        content_key = "cached:{}".format(url)
 
         cached_result = redis_client.get(content_key)
         if cached_result:
             return cached_result.decode("utf-8")
+
+        count_key = "count:{}".format(url)
+        redis_client.incr(count_key)
 
         html = method(url)
         redis_client.setex(content_key, 10, html)
