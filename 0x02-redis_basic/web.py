@@ -6,7 +6,6 @@ import requests
 import redis
 from functools import wraps
 from typing import Callable
-from uuid import uuid4
 
 redis_client = redis.Redis()
 
@@ -16,21 +15,21 @@ def track_url_access(method: Callable) -> Callable:
     count how many times the url was accessed
     """
     @wraps(method)
-    def wrapper(*args):
+    def wrapper(url: str):
         """
         Wrapper function.
         """
-        url = args[0]
+        count_key = "count:{}".format(url)
+        content_key = "content:{}".format(url)
 
-        key = "count:{}".format(url)
-        redis_client.incr(key)
+        redis_client.incr(count_key)
 
-        cached_result = redis_client.get("cached:{}".format(url))
+        cached_result = redis_client.get(content_key)
         if cached_result:
             return cached_result.decode("utf-8")
 
         html = method(url)
-        redis_client.setex("cached:{}".format(url), 10, html)
+        redis_client.setex(content_key, 10, html)
 
         return html
 
