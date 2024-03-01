@@ -105,6 +105,6 @@ def replay(fn: Callable):
 
     inputs = redis_client.lrange(inputs_key, 0, -1)
     outputs = redis_client.lrange(outputs_key, 0, -1)
-    for i in range(len(inputs)):
-        input = inputs[i].decode("utf-8")
-        print("{}(*{}) -> {}".format(fn_name, input, outputs[i]))
+    for input, output in zip(inputs, outputs):
+        decoded_input = input.decode("utf-8")
+        print("{}(*{}) -> {}".format(fn_name, decoded_input, output))
