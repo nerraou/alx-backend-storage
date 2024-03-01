@@ -47,6 +47,24 @@ def call_history(method: Callable) -> Callable:
     return wrapper
 
 
+def replay(fn: Callable):
+    """
+    replay fn calls history
+    """
+    fn_name = fn.__qualname__
+    inputs_key = "{}:inputs".format(fn_name)
+    outputs_key = "{}:outputs".format(fn_name)
+    redis_client = redis.Redis()
+
+    inputs = redis_client.lrange(inputs_key, 0, -1)
+    outputs = redis_client.lrange(outputs_key, 0, -1)
+
+    print("{} was called {} times:".format(fn_name, len(inputs)))
+    for input, output in zip(inputs, outputs):
+        decoded_input = input.decode("utf-8")
+        print("{}(*{}) -> {}".format(fn_name, decoded_input, output))
+
+
 class Cache:
     """
     This is cash class
@@ -92,19 +110,3 @@ class Cache:
         get value of key and convert it to int
         """
         return self.get(key, lambda data: data.decode("utf-8"))
-
-
-def replay(fn: Callable):
-    """
-    replay fn calls history
-    """
-    fn_name = fn.__qualname__
-    inputs_key = "{}:inputs".format(fn_name)
-    outputs_key = "{}:outputs".format(fn_name)
-    redis_client = redis.Redis()
-
-    inputs = redis_client.lrange(inputs_key, 0, -1)
-    outputs = redis_client.lrange(outputs_key, 0, -1)
-    for input, output in zip(inputs, outputs):
-        decoded_input = input.decode("utf-8")
-        print("{}(*{}) -> {}".format(fn_name, decoded_input, output))
